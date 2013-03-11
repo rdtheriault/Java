@@ -1,0 +1,247 @@
+/***********************************************************************
+Program Name: GuessGame.java
+Programmer's Name: Robert Theriault
+Program Description: GUI to guess what my number is
+***********************************************************************/
+
+package guesswho;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Random;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+
+public class GuessGame extends JFrame {
+
+  private JPanel contentPane;
+  private JTextField txtGuess;
+  private static int random;
+  private int lastGuess;
+  private int count;
+  private JTextField txtAnswer;
+  private JTextField txtLastGuess;
+  private JButton btnTryAgain; 	
+  private JLabel lblGuess;
+  private JPanel panel;
+  private JButton btnGuess;
+  
+  /**
+   * Launch the application.
+   */
+  public static void main(String[] args) 
+  {
+  	random = getRandom();
+  	
+  	EventQueue.invokeLater(new Runnable() {
+  		public void run() {
+  			try {
+  				GuessGame frame = new GuessGame();
+  				frame.setVisible(true);
+  			} catch (Exception e) {
+  				e.printStackTrace();
+  			}
+  		}
+  	});
+  }
+
+  /**
+   * Create the frame.
+   */
+  public GuessGame() {
+  	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  	setBounds(100, 100, 450, 300);
+  	contentPane = new JPanel();
+  	contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+  	contentPane.setLayout(new BorderLayout(0, 0));
+  	setContentPane(contentPane);
+  	
+  	panel = new JPanel();
+  	contentPane.add(panel, BorderLayout.CENTER);
+  	panel.setLayout(null);
+  	
+  	btnGuess = new JButton("Guess");
+  	btnGuess.addActionListener(new ActionListener() 
+  	{
+  		public void actionPerformed(ActionEvent arg0) 
+  		{
+  			guess();
+  		}
+  	});
+  	btnGuess.setBounds(115, 124, 89, 23);
+  	panel.add(btnGuess);
+  	
+  	btnTryAgain = new JButton("Try Again");
+  	btnTryAgain.addActionListener(new ActionListener() 
+  	{
+  		public void actionPerformed(ActionEvent arg0) 
+  		{
+  			tryAgain();
+  		}
+  	});
+  	btnTryAgain.setBounds(115, 158, 89, 23);
+  	panel.add(btnTryAgain);
+  	btnTryAgain.setVisible(false);
+  	
+  	JLabel lblMain = new JLabel("I have a number between 1 and 1000 -- can you quess my number?");
+  	lblMain.setBounds(10, 32, 450, 33);
+  	panel.add(lblMain);
+  	
+  	lblGuess = new JLabel("Please enter your guess:");
+  	lblGuess.setBounds(10, 76, 149, 14);
+  	panel.add(lblGuess);
+  	
+  	txtGuess = new JTextField();
+  	txtGuess.setBounds(158, 75, 86, 20);
+  	panel.add(txtGuess);
+  	txtGuess.setColumns(10);
+  	
+  	JButton btnExit = new JButton("Exit");
+  	btnExit.addActionListener(new ActionListener() 
+  	{
+  		public void actionPerformed(ActionEvent arg0) 
+  		{
+  			System.exit(0);
+  		}
+  	});
+  	btnExit.setBounds(286, 206, 89, 23);
+  	panel.add(btnExit);
+  	
+  	
+  	//Two text boxes below for testing
+  	txtAnswer = new JTextField();
+  	txtAnswer.setBounds(230, 125, 86, 20);
+  	panel.add(txtAnswer);
+  	txtAnswer.setColumns(10);
+  	txtAnswer.setVisible(false);
+  	
+  	txtLastGuess = new JTextField();
+  	txtLastGuess.setBounds(230, 159, 86, 20);
+  	panel.add(txtLastGuess);
+  	txtLastGuess.setColumns(10);
+  	txtLastGuess.setVisible(false);
+  }
+  
+  public static int getRandom()
+  {
+  	Random randomGenerator = new Random();
+  	random = randomGenerator.nextInt(1000);
+  	random = random + 1;
+  	return random;
+  }
+  
+  public void guess()
+  {
+
+  	String input = txtGuess.getText();
+  	int guess = 0;
+  	
+  	int errorHolder = 0;
+  	
+  	
+  	////for testing (below)////
+  	//int holder = random;
+  	//String answer = Integer.toString(holder);
+  	//txtAnswer.setText(answer);
+  	
+  	//int holder2 = lastGuess;
+  	//String answer2 = Integer.toString(holder2);
+  	//txtLastGuess.setText(answer2);
+  	////for testing (above)////
+  	
+  	try
+  	{
+  		guess = Integer.parseInt(input);
+  	}
+  	catch (NumberFormatException nfe)
+  	{
+  		JOptionPane.showMessageDialog(null,  "You need to enter an integer");
+  		errorHolder = 1;
+  	}
+  	
+  	if (errorHolder == 0)
+  	{
+  		if (guess < 1 || guess > 1000)
+  		{
+  			JOptionPane.showMessageDialog(null,  "Your number is not between 1 - 1000");
+  			errorHolder = 1;
+  		}
+  	}
+  	
+  	if (errorHolder == 0)
+  	{
+  		count++;
+  	}
+  	
+  	if (errorHolder == 0)
+  	{
+  		if (guess == random)
+  		{
+  			panel.setBackground(Color.GREEN);	
+  			lblGuess.setText("That is right!!!");
+  			btnGuess.setEnabled(false);
+  			btnTryAgain.setVisible(true);
+  			txtGuess.setEditable(false);
+  			
+  			int holder3 = count;
+  			String counter = Integer.toString(holder3);
+  			JOptionPane.showMessageDialog(null, "You took " + counter + " guesses");
+  			
+  		}
+  		else if (guess < random)
+  		{
+  			lblGuess.setText("That is too low");
+  			
+  			//test to see if hot or cold, need to square in order to make guessing high work
+  			if (((random - guess)*(random - guess)) < ((random - lastGuess)*(random - lastGuess)))
+  			{
+  				panel.setBackground(Color.RED);
+  			}
+  			else if (((random - guess)*(random - guess)) > ((random - lastGuess)*(random - lastGuess)))
+  			{
+  				panel.setBackground(Color.BLUE);					
+  			}
+  		}
+  		else if (guess > random)
+  		{
+  			lblGuess.setText("That is too high");	
+  			
+  			//test to see if hot or cold, need to square in order to make guessing high work				
+  			if (((random - guess)*(random - guess)) < ((random - lastGuess)*(random - lastGuess)))
+  			{
+  				panel.setBackground(Color.RED);
+  			}
+  			else if (((random - guess)*(random - guess)) > ((random - lastGuess)*(random - lastGuess)))
+  			{
+  				panel.setBackground(Color.BLUE);					
+  			}
+  		}
+  		else
+  		{
+  			JOptionPane.showMessageDialog(null,  "Not really sure what you did to get this message but you need to contact the program developer to fix it");			
+  		}
+  	}
+  	
+  	if (errorHolder == 0)
+  	{
+  		lastGuess = guess;
+  	}
+  }
+  
+  public void tryAgain()
+  {
+  	random = getRandom();
+  	btnGuess.setEnabled(true);
+  	btnTryAgain.setVisible(false);
+  	txtGuess.setEditable(true);
+  	lblGuess.setText("Please enter your guess:");
+  }
+}
