@@ -1,0 +1,112 @@
+
+  /***********************************************************************
+  Program Name: Diamond.java
+  Programmer's Name: Robert Theriault
+  Program Description: Make a diamond with stars 
+  ***********************************************************************/
+
+import java.util.Arrays;
+import javax.swing.*;  
+
+
+public class Diamond {
+
+  /**
+   * @param args
+   */
+
+  public static void main(String[] args) 
+  {
+  	
+  	String input = "";
+  	int number = 0;
+  	boolean true1 = true;
+  	
+  	while (true1)
+  	{
+  	//Ask for radius and convert to integer
+  	input = JOptionPane.showInputDialog("Enter an Odd Number between 3-15");
+  	
+  		try//test in integer
+  		{
+  			number =(int) Double.parseDouble(input);
+  			if (number < 3 || number > 15)//test if inbetween 3-15
+  			{
+  				JOptionPane.showMessageDialog(null,  "You need to enter a number between 3-15");
+  			}
+  			else if (number % 2 == 0)//test if odd
+  			{
+  				JOptionPane.showMessageDialog(null,  "You need to enter an Odd number");
+  			}
+  			else 
+  			{
+  				true1 = false;					
+  			}
+  		}
+  		catch (NumberFormatException nfe)
+  		{
+  			JOptionPane.showMessageDialog(null,  "You need to enter an Integer");
+  		}
+  		
+  	}
+  	
+  	//find halfway point and create holderString to add *'s to String array
+  	int half = number/2+1;
+  	int halfHolder = half;
+  	String holderString = "";
+  	
+  	//create string array to hold *'s
+  	String[] diamondString = new String[number];
+  	Arrays.fill(diamondString, "");
+  	int a = 0;//array holder
+  	
+  	
+  	//Top half of the diamond
+  	while (halfHolder != 0)
+  	{
+  		//add * to string at a
+  		diamondString[a] = "*" + holderString;
+  		holderString = holderString + "**";
+  		
+  		halfHolder = halfHolder -1;
+  		
+  		a = a + 1;//increment array spot
+  	}
+  	
+  	holderString = "*";//reset holderString gives odd number
+  	
+  	//bottom half of diamond
+  	while (a < number)
+  	{
+  		for (int s = a; s <= number-2; s++ )
+  		{
+  				holderString += "**" ;
+  		}
+
+  		diamondString[a] =  holderString;
+
+  		holderString = "*";//reset holderString gives odd number
+  		
+  		a = a + 1;//increment array spot
+  	}
+  	
+  	
+  	//Create html string in order to display centered in JLabel
+  	String message = "<html><body><div width='50px' align='center'>";
+  	
+  	for (int i = 0; i < number; i++)
+  	{
+  		message = message + "<br>" + diamondString[i];
+  	}
+
+  	message = message + "</div></body></html>";
+  	
+  	JLabel messageLabel = new JLabel(message);
+  	
+  	JOptionPane.showMessageDialog(null, messageLabel);		
+  	
+  	
+  }
+  
+
+}
