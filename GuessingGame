@@ -245,3 +245,352 @@ public class GuessGame extends JFrame {
   	lblGuess.setText("Please enter your guess:");
   }
 }
+
+
+
+~~~~~ ANDRIOD VERSION ~~~~~
+
+package com.rdt.guess;
+
+import java.util.Random;
+import android.os.Bundle;
+import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.graphics.Color;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnKeyListener;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
+import android.widget.EditText;
+
+public class GuessActivity extends Activity {
+	
+	private static int random;
+	private int lastGuess;
+	private int count;
+	private Button btnGuess;
+	private Button btnTryAgain;
+	private EditText lblGuess;
+	private EditText txtGuess;
+	private View bg;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_guess);  
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//disable landscape?
+        
+        bg = findViewById(R.id.content);
+        
+        random = getRandom();
+        
+        btnGuess = (Button) findViewById(R.id.button1);
+        btnTryAgain = (Button) findViewById(R.id.button2);
+        lblGuess = (EditText) findViewById(R.id.text1);
+        txtGuess = (EditText) findViewById(R.id.text2);
+        
+        
+        
+        
+        txtGuess.setImeOptions(EditorInfo.IME_ACTION_GO);
+        
+        //txtGuess.
+        
+        txtGuess.setOnKeyListener(new OnKeyListener()
+        {  
+        	
+			@Override
+			public boolean onKey(View arg0, int arg1, KeyEvent arg2) 
+			{
+				
+				if(arg1 == KeyEvent.KEYCODE_ENTER && arg2.getAction()==0)
+				{
+					guess();
+				}
+				
+			return false;
+			} 
+
+        });
+        
+
+        
+        btnGuess.setOnClickListener(new View.OnClickListener() 
+        {
+			
+			@Override
+			public void onClick(View v) 
+			{
+				// TODO Auto-generated method stub
+				guess();
+			}
+		});
+        
+        btnTryAgain.setOnClickListener(new View.OnClickListener() 
+        {
+			
+			@Override
+			public void onClick(View v) 
+			{
+				// TODO Auto-generated method stub
+				tryAgain();
+			}
+		});
+        
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) 
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.guess, menu);  
+
+        return true;
+    }
+    
+    
+    
+    
+    public static int getRandom()
+    {
+     Random randomGenerator = new Random();
+     random = randomGenerator.nextInt(1000);
+     random = random + 1;
+     return random;
+    }
+    
+    public void guess()
+    {
+
+     int guess = 0;
+    
+     int errorHolder = 0;
+    
+    
+     ////for testing (below)////
+     //final EditText txtAnswer = (EditText) findViewById(R.id.editText1);
+     //int holder = random;
+     //String answer = Integer.toString(holder);
+     //txtAnswer.setText(answer); //need to create in activity_guess.xml
+    
+     //int holder2 = lastGuess;
+     //String answer2 = Integer.toString(holder2);
+     //txtLastGuess.setText(answer2);
+     ////end testing (above)////
+    
+     try
+     {
+         String input = txtGuess.getText().toString();
+         guess = Integer.parseInt(input);
+     }
+     catch (NumberFormatException nfe)
+     {
+    	 lblGuess.setText("You need to enter an integer");
+    	 errorHolder = 1;
+     }
+    
+     if (errorHolder == 0)
+     {
+    	 
+    	 if (guess < 1 || guess > 1000)
+    	 {
+        	 lblGuess.setText("Your number is not between 1 - 1000");
+    		 errorHolder = 1;
+    	 }
+     }
+     
+     if (errorHolder == 0)
+     {
+    	 
+    	 if (guess == lastGuess)
+    	 {
+        	 lblGuess.setText("You just guessed that...");
+    		 errorHolder = 1;
+    	 }
+     }   
+    
+     if (errorHolder == 0)
+     {
+    	 count++;
+     }
+    
+     if (errorHolder == 0)
+     	{
+    	 	if (guess == random)
+    	 	{
+    	 		
+    	 		bg.setBackgroundColor(Color.GREEN);
+    	 		lblGuess.setText("That is right!!!");
+    	 		txtGuess.setText("");
+    	 		btnGuess.setEnabled(false);
+    	 		btnTryAgain.setVisibility(View.VISIBLE);
+    	 		txtGuess.setEnabled(false);
+    
+    	 		
+    	 		int holder3 = count; //might not need to do this conversion
+    	 		String counter = Integer.toString(holder3);
+    	 		lblGuess.setText("You took " + counter + " guess(es)");
+    	 		
+    	 		count = 0; //reset count
+
+    	 	}
+    	 	else if (guess < random)
+    	 	{
+    	 		lblGuess.setText("That is too low \n- " + count + " guess(es)");
+    
+    	 		//test to see if hot or cold, need to square in order to make guessing high work
+    	 		if (((random - guess)*(random - guess)) < ((random - lastGuess)*(random - lastGuess)))
+    	 		{
+    	 			bg.setBackgroundColor(Color.RED);
+    	 			if (guess < (random+10) && guess > (random-10))bg.setBackgroundColor(Color.rgb(255, 102, 102));
+    	 		}
+    	 		else if (((random - guess)*(random - guess)) > ((random - lastGuess)*(random - lastGuess)))
+    	 		{
+    	 			bg.setBackgroundColor(Color.BLUE);
+    	 			if (guess < (random+10) && guess > (random-10))bg.setBackgroundColor(Color.rgb(102, 255, 255));
+    	 		}
+    	 	}
+    	 	else if (guess > random)
+    	 	{
+    	 		lblGuess.setText("That is too high \n- " + count + " guesses");
+    
+    	 		//test to see if hot or cold, need to square in order to make guessing high work
+    	 		if (((random - guess)*(random - guess)) < ((random - lastGuess)*(random - lastGuess)))
+    	 		{
+    	 			bg.setBackgroundColor(Color.RED);
+    	 			if (guess < (random+10) && guess > (random-10))bg.setBackgroundColor(Color.rgb(255, 102, 102));
+    	 		}
+    	 		else if (((random - guess)*(random - guess)) > ((random - lastGuess)*(random - lastGuess)))
+    	 		{
+    	 			bg.setBackgroundColor(Color.BLUE);
+    	 			if (guess < (random+10) && guess > (random-10))bg.setBackgroundColor(Color.rgb(102, 255, 255));
+    	 		}
+    	 	}
+    	 	else
+    	 	{ 
+    	 		lblGuess.setText("Not really sure what you did to get this message but you need to contact the program developer to fix it");    
+    	 	}
+     }
+    
+     if (errorHolder == 0)
+     {
+    	 lastGuess = guess;
+     }
+    
+    }
+    
+    public void tryAgain()
+    {
+     random = getRandom();
+     btnGuess.setEnabled(true);
+     btnTryAgain.setVisibility(View.INVISIBLE);
+     txtGuess.setEnabled(true);
+     lblGuess.setText("Please enter your guess:");
+    }
+    
+  
+}
+
+~~~ XML LAYOUT
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/Green"
+    tools:context=".GuessActivity" >
+
+            <EditText
+                android:id="@+id/text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="80dp"
+                android:clickable="false"
+                android:ems="10"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:hint="@string/empty"
+                android:inputType="none"
+                android:text="@string/welcome"
+                android:textColor="@color/Black" >
+
+                <requestFocus />
+            </EditText>
+
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@color/Gray"
+                android:text="@string/guess" />
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/button1"
+                android:layout_centerHorizontal="true"
+                android:background="@color/Gray"
+                android:text="@string/tryAgain"
+                android:visibility="invisible" />
+
+            <EditText
+                android:id="@+id/text2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/button2"
+                android:layout_alignLeft="@+id/text1"
+                android:layout_marginBottom="70dp"
+                android:background="@color/White"
+                android:ems="10"
+                android:inputType="number" 
+                android:singleLine="true" />
+            
+</RelativeLayout>
+
+~~~ MANIFEST - for portrait mode
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.rdt.guess"
+    android:versionCode="3"
+    android:versionName="1.2" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="17" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="com.rdt.guess.GuessActivity"
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+
